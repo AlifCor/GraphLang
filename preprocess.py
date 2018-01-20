@@ -94,7 +94,7 @@ def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, lang=None, links_
 
     return adj
 
-def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, max_dist=4, max_weight=16, ignore_stopwords=False, links_from_stopwords=True, links_to_stopwords=True):
+def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, max_dist=4, max_weight=16, ignore_stopwords=False, links_from_stopwords=True, links_to_stopwords=True, words_map=False):
     if(ignore_stopwords):
         links_from_stopwords = False
         links_to_stopwords = False
@@ -106,4 +106,8 @@ def text_to_graph(text, normalization="lem", lang="english", words_lower=True, n
 
     words_map = words_to_int(words, lang=lang, ignore_punct=no_punct_nodes, ignore_stopwords=ignore_stopwords)
 
-    return build_graph(words, words_map, lang=lang, max_dist=max_dist, max_weight=max_weight, links_from_stopwords=links_from_stopwords, links_to_stopwords=links_to_stopwords)
+    graph = build_graph(words, words_map, lang=lang, max_dist=max_dist, max_weight=max_weight, links_from_stopwords=links_from_stopwords, links_to_stopwords=links_to_stopwords)
+    if(words_map):
+        return (graph, words_map)
+    else:
+        return graph
