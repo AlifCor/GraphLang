@@ -65,7 +65,7 @@ def words_to_int(words, first_index=0, ignore_punct=False, ignore_stopwords=Fals
 
     return {w:i for w,i in zip(words_set, range(first_index, first_index + len(words_set)))}
 
-def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, links_to_stopwords=True):
+def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True):
     words_len = len(words)
     while to_index < words_len and (words[to_index] in string.punctuation or (not links_to_stopwords and words[to_index] in stopwords)):
         to_index += 1
@@ -90,7 +90,7 @@ def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, lang=None, links_
         next_index = index + 1
 
         for i in range(0, max_dist):
-            weight, next_index = build_link(adj, weight, lemmas_map, lemmas, index, next_index, max_dist, links_to_stopwords)
+            weight, next_index = build_link(adj, weight, lemmas_map, lemmas, index, next_index, max_dist, stopwords, links_to_stopwords)
 
     return adj
 
