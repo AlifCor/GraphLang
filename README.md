@@ -25,7 +25,11 @@ articles, books or even tweets (the latter ones could be used in batch, one twee
 certainly not provide enough information).
 ## Who ?
 The “Quatre Mousquetaires”, to serve you.
+
 Ali Hosseiny
+
 Charles Gallay
+
 Maxime Delisle
+
 Grégoire Clément
