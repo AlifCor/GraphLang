@@ -95,6 +95,10 @@ def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, lang=None, links_
     return adj
 
 def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, max_dist=4, max_weight=16, ignore_stopwords=False, links_from_stopwords=True, links_to_stopwords=True):
+    if(ignore_stopwords):
+        links_from_stopwords = False
+        links_to_stopwords = False
+
     if normalization == "lem":
         words = words_lems(text, lower=words_lower)
     elif normalization == "stem":
