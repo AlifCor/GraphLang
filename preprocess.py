@@ -65,9 +65,9 @@ def words_to_int(words, first_index=0, ignore_punct=False, ignore_stopwords=Fals
 
     return {w:i for w,i in zip(words_set, range(first_index, first_index + len(words_set)))}
 
-def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True):
+def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True, self_links=False):
     words_len = len(words)
-    while to_index < words_len and (words[to_index] in string.punctuation or (not links_to_stopwords and words[to_index] in stopwords)):
+    while to_index < words_len and (words[to_index] in string.punctuation or (not links_to_stopwords and words[to_index] in stopwords) or (not self_links and words[to_index] == words[from_index])):
         to_index += 1
         weight /= 2
 
@@ -76,7 +76,7 @@ def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, st
     weight /= 2
     return weight, to_index + 1
 
-def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, lang=None, links_from_stopwords=True, links_to_stopwords=True):
+def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, lang=None, links_from_stopwords=True, links_to_stopwords=True, self_links=False):
     len_dist_lemmas = len(lemmas_map)
     len_lemmas = len(lemmas)
     adj = np.zeros((len_dist_lemmas, len_dist_lemmas))
@@ -90,11 +90,11 @@ def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, lang=None, links_
         next_index = index + 1
 
         for i in range(0, max_dist):
-            weight, next_index = build_link(adj, weight, lemmas_map, lemmas, index, next_index, max_dist, stopwords, links_to_stopwords)
+            weight, next_index = build_link(adj, weight, lemmas_map, lemmas, index, next_index, max_dist, stopwords, links_to_stopwords, self_links)
 
     return adj
 
-def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, max_dist=4, max_weight=16, ignore_stopwords=False, links_from_stopwords=True, links_to_stopwords=True, words_map=False):
+def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, max_dist=4, max_weight=16, ignore_stopwords=False, links_from_stopwords=True, links_to_stopwords=True, self_links=False, return_words_map=False):
     if(ignore_stopwords):
         links_from_stopwords = False
         links_to_stopwords = False
@@ -107,7 +107,7 @@ def text_to_graph(text, normalization="lem", lang="english", words_lower=True, n
     words_map = words_to_int(words, lang=lang, ignore_punct=no_punct_nodes, ignore_stopwords=ignore_stopwords)
 
     graph = build_graph(words, words_map, lang=lang, max_dist=max_dist, max_weight=max_weight, links_from_stopwords=links_from_stopwords, links_to_stopwords=links_to_stopwords)
-    if(words_map):
+    if(return_words_map):
         return (graph, words_map)
     else:
         return graph
