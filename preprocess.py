@@ -53,15 +53,17 @@ def words_stems(text, lang="english", lower=False, ignore_stopwords=False, ignor
 
     return [stem_word(t, stemmer, lower) for t in tokens]
 
-def words_to_int(words, first_index=0, ignore_punct=False):
+def words_to_int(words, first_index=0, ignore_punct=False, ignore_stopwords=False, lang=None):
+    if(ignore_stopwords and lang != None):
+        stopwords = nltk.corpus.stopwords.words(lang)
+        words = filter(lambda w: w not in stopwords, words)
+
     if(ignore_punct):
         words_set = set([w for w in words if w not in string.punctuation])
     else:
         words_set = set(words)
 
     return {w:i for w,i in zip(words_set, range(first_index, first_index + len(words_set)))}
-
-stopwords = nltk.corpus.stopwords.words('english')
 
 def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, links_to_stopwords=True):
     words_len = len(words)
@@ -74,10 +76,12 @@ def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, li
     weight /= 2
     return weight, to_index + 1
 
-def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, links_from_stopwords=True, links_to_stopwords=True):
+def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, lang=None, links_from_stopwords=True, links_to_stopwords=True):
     len_dist_lemmas = len(lemmas_map)
     len_lemmas = len(lemmas)
     adj = np.zeros((len_dist_lemmas, len_dist_lemmas))
+    if(lang != None and (not links_from_stopwords or not links_to_stopwords)):
+        stopwords = nltk.corpus.stopwords.words(lang)
     for index, lemma in enumerate(lemmas):
         # TODO Take into account stop words
         if lemma in string.punctuation or (not links_from_stopwords and lemma in stopwords):
@@ -90,12 +94,12 @@ def build_graph(lemmas, lemmas_map, max_dist=4, max_weight=16, links_from_stopwo
 
     return adj
 
-def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, max_dist=4, max_weight=16, links_from_stopwords=True, links_to_stopwords=True):
+def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, max_dist=4, max_weight=16, ignore_stopwords=False, links_from_stopwords=True, links_to_stopwords=True):
     if normalization == "lem":
         words = words_lems(text, lower=words_lower)
     elif normalization == "stem":
         words = words_stems(text, lang=lang, lower=words_lower)
 
-    words_map = words_to_int(words, ignore_punct=no_punct_nodes)
+    words_map = words_to_int(words, lang=lang, ignore_punct=no_punct_nodes, ignore_stopwords=ignore_stopwords)
 
-    return build_graph(words, words_map, max_dist=max_dist, max_weight=max_weight, links_from_stopwords=links_from_stopwords, links_to_stopwords=links_to_stopwords)
+    return build_graph(words, words_map, lang=lang, max_dist=max_dist, max_weight=max_weight, links_from_stopwords=links_from_stopwords, links_to_stopwords=links_to_stopwords)
