@@ -116,9 +116,8 @@ def plot_labels(eigenvectors, labels=None, ax=plt):
     None
     """
     
-    ax.scatter(eigenvectors[:, 1], eigenvectors[:, 2], c=labels, cmap='RdBu', alpha=0.5)
+    ax.scatter(eigenvectors[:, 1], eigenvectors[:, 2], c=labels, cmap='Accent', alpha=0.5)
     
-
 
 def compute_err(labels, target_labels, print_=False):
     """
