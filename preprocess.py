@@ -112,8 +112,7 @@ def text_to_graph(text, normalization="lem", lang="english", words_lower=True, n
     else:
         return graph
 
-# To get the word_map_inversed, you need to use: word_map_inversed = {i[1]:i[0] for i in word_map.items()}
-def get_n_closest_words(graph, word_map_inversed, word, n_words=10):
-    index = word_map_used[word]
+def get_n_closest_words(graph, word_map, word, n_words=10):
+    index = word_map[word]
     word_map_inversed = {i[1]:i[0] for i in word_map.items()}
     return [word_map_inversed[np.argsort(graph[index])[::-1][i]] for i in range(n_words)]
