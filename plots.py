@@ -97,8 +97,8 @@ def plot3D(eigenvectors, pred, infos, label_to_name):
     fig = go.Figure(data=data, layout=layout)
     return iplot(fig)
 
-def dis2text(arr, pred_to_name):
+def dis2text(arr, tr_id2name,tr_GMMid2label):
     text = ""
     for i in range(len(arr)):
-        text += pred_to_name[i] + ' : ' + str(int(arr[i]*1000)/10)+"%" + "<br>"
+        text += tr_id2name[tr_GMMid2label[i]] + ' : ' + str(int(arr[i]*1000)/10)+"%" + "<br>"
     return text
