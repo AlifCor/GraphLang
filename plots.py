@@ -40,7 +40,6 @@ def plot_confusion_matrix(cm, classes_x, classes_y,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-
 def plot3D(eigenvectors, pred, infos, label_to_name, node_size=2, opacity=0.9):
     # copy past from above
     traces = []
@@ -56,7 +55,6 @@ def plot3D(eigenvectors, pred, infos, label_to_name, node_size=2, opacity=0.9):
 
     for label in sorted(set(pred)):
         label_mask = pred == label
-        # '''
         x = eigenvectors[:, 1][label_mask]
         y = eigenvectors[:, 2][label_mask]
         z = eigenvectors[:, 3][label_mask]
@@ -68,10 +66,10 @@ def plot3D(eigenvectors, pred, infos, label_to_name, node_size=2, opacity=0.9):
             name=label_to_name[label],
             mode='markers',
             marker=dict(
-                size=node_size,
-                color=label,
-                colorscale='Portland',
-                opacity=opacity
+                size= node_size if label < 500 else node_size*5,
+                color= label,
+                colorscale= 'Portland',
+                opacity= opacity if label < 500 else 1
             ),
             text=infos[label_mask]
         )
@@ -96,13 +94,6 @@ def plot3D(eigenvectors, pred, infos, label_to_name, node_size=2, opacity=0.9):
 
     fig = go.Figure(data=data, layout=layout)
     return iplot(fig)
-
-
-def dis2text_old(arr, tr_id2name, tr_GMMid2label):
-    text = ""
-    for i in range(len(arr)):
-        text += tr_id2name[i] + ' : ' + str(int(arr[i] * 1000) / 10) + "%" + "<br>"
-    return text
 
 
 def dis2text(arr, tr_id2name):
