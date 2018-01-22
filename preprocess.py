@@ -17,11 +17,11 @@ def get_wordnet_pos(treebank_tag):
     else:
         return wordnet.NOUN
 
-def words_tokens(text, ignore_punct=False):
-    if(ignore_punct):
-        text = text.translate(None, string.punctuation)
 
-    return [t for t in nltk.word_tokenize(text)]
+
+def words_tokens(text, ignore_punct=False):
+    exclude = set(string.punctuation)
+    return [t for t in nltk.word_tokenize(text) if not ignore_punct or t[0] not in set(string.punctuation)]
 
 def words_lems(text, lower=False, ignore_punct=False):
     text_pos = nltk.pos_tag(words_tokens(text, ignore_punct=ignore_punct))
@@ -117,13 +117,13 @@ def build_graph(lemmas, lemmas_map, max_dist=20, nlinks=4, max_weight=16, lang=N
 
     return adj
 
-def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, nlinks=4, max_dist=20, max_weight=16, ignore_stopwords=False, links_from_stopwords=True, links_to_stopwords=True, self_links=False, return_words_map=False):
+def text_to_graph(text, normalization="lem", lang="english", words_lower=True, no_punct_nodes=True, nlinks=4, max_dist=20, max_weight=16, ignore_punct=True, ignore_stopwords=False, links_from_stopwords=True, links_to_stopwords=True, self_links=False, return_words_map=False):
     if(ignore_stopwords):
         links_from_stopwords = False
         links_to_stopwords = False
 
     if normalization == "lem":
-        words = words_lems(text, lower=words_lower)
+        words = words_lems(text, lower=words_lower, ignore_punct=ignore_punct)
     elif normalization == "stem":
         words = words_stems(text, lang=lang, lower=words_lower)
 

@@ -6,14 +6,13 @@ from matplotlib import pyplot as plt
 from plotly.offline import iplot
 
 
-# A function to plot the confusion matrix, inspired by
-# http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
-# sphx-glr-auto-examples-model-selection-plot-confusion-matrix-py
 def plot_confusion_matrix(cm, classes_x, classes_y,
                           normalize=False,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
     """
+    A function to plot the confusion matrix, highly inspired by the one on scikit-learn
+
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
     """
