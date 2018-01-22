@@ -6,6 +6,22 @@ from sklearn.mixture import GaussianMixture
 
 
 def find_best_perm(y_true, y_pred, metric=lambda y1, y2: f1_score(y1, y2, average='weighted')):
+    """
+        Compute the (square) distance matrix given some features and a metric
+
+        Parameters
+        —------—
+        y_true : ndarray
+        true labels
+
+        y_pred
+        prediction labels
+
+        Returns
+        —---—
+        out : tuple
+        Output tuple of the permutations
+    """
     scores = []
     permutations = list(itertools.permutations(range(len(set(y_true)))))
     for perm in permutations:
