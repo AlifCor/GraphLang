@@ -9,10 +9,12 @@ import networkx as nx
 import community
 from matplotlib import pyplot as plt
 
+
 def build_link_exp_decay(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True, self_links=False):
     """
     Builds a link from a given word in the graph to another word at a defined index.
     The farther the other word, the smaller the edge between them.
+    In this variant, the weight of the edges decays exponentially with the distance
     """
     words_len = len(words)
     links_made = 0
@@ -27,6 +29,10 @@ def build_link_exp_decay(adj, weight, words_map, words, from_index, to_index, ma
     return weight, to_index + 1, links_made
 
 def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True, self_links=False):
+    """
+    Builds a link from a given word in the graph to another word at a defined index.
+    The farther the other word, the smaller the edge between them.
+    """
     links_made = 0
     if(weight <= 0):
         weight, to_index + 1, links_made
@@ -49,10 +55,9 @@ def build_graph(lemmas, lemmas_map, max_dist=20, nlinks=4, max_weight=16, lang=N
     if(lang != None and (not links_from_stopwords or not links_to_stopwords)):
         stopwords = nltk.corpus.stopwords.words(lang)
     for index, lemma in enumerate(lemmas):
-        # TODO Take into account stop words
         if lemma in string.punctuation or (not links_from_stopwords and lemma in stopwords):
             continue
-        weight = max_dist#max_weight
+        weight = max_dist
         next_index = index + 1
         total_links_made = 0
 
@@ -94,7 +99,6 @@ def get_n_closest_words(graph, word_map, word, n_words=10):
     word_map_inversed = {i[1]:i[0] for i in word_map.items()}
     return [word_map_inversed[np.argsort(graph[index])[::-1][i]] for i in range(n_words)]
 
-
 def sparsity(m):
     return 1 - np.count_nonzero(m) / m.size
 
@@ -115,6 +119,9 @@ def compute_betweenness(G, weight="weight"):
     return betweenness
 
 def scale_betweenness(betweenness, min_=10, max_=120):
+    """
+    Scales the values of the betweenness dictionary to a certain range of values
+    """
     max_el = max(betweenness.items(), key=lambda el: el[1])[1]
     mult = max_ / (max_el + min_)
     betweenness_scaled = {k: mult*v + min_ for k,v in betweenness.items()}
@@ -128,6 +135,9 @@ def community_partition(G, weight="weight"):
     return community.best_partition(G, weight=weight)
 
 def communities(G, draw=True, cmap=None, pos=None, partition=None, betweenness_scaled=None):
+    """
+    Computes the communities using the Louvain heuristics
+    """
     if(partition == None):
         partition = community_partition(G, weight="betweenness")
     if(betweenness_scaled == None):
@@ -152,6 +162,9 @@ def communities(G, draw=True, cmap=None, pos=None, partition=None, betweenness_s
     return pos, partition, betweenness_scaled
 
 def induced_graph(original_graph, partition, induced_graph=None, rescale_node_size=1., draw=True, cmap=None, words_map_inv=None, pos=None, betweenness_scaled=None):
+    """
+    Returns the graph induced from the community partition of the graph
+    """
     if(induced_graph == None):
         induced_graph = community.induced_graph(partition, original_graph, weight="weight")
 

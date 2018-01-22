@@ -3,6 +3,7 @@ from nltk.corpus import wordnet
 from nltk.stem.snowball import SnowballStemmer
 import string
 
+
 wnl = nltk.WordNetLemmatizer()
 
 def get_wordnet_pos(treebank_tag):
@@ -16,8 +17,6 @@ def get_wordnet_pos(treebank_tag):
         return wordnet.ADV
     else:
         return wordnet.NOUN
-
-
 
 def words_tokens(text, ignore_punct=False):
     exclude = set(string.punctuation)
@@ -54,6 +53,9 @@ def words_stems(text, lang="english", lower=False, ignore_stopwords=False, ignor
     return [stem_word(t, stemmer, lower) for t in tokens]
 
 def words_to_int(words, first_index=0, ignore_punct=False, ignore_stopwords=False, lang=None):
+    """
+    Returns a dictionary mapping each of the words in the corpus to an integer
+    """
     if(ignore_stopwords and lang != None):
         stopwords = nltk.corpus.stopwords.words(lang)
         words = filter(lambda w: w not in stopwords, words)
