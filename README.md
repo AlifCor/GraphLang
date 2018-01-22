@@ -11,3 +11,15 @@ At first the graph could be built by only considering words directly adjacent to
 On the other hand, we could consider taking a set of documents and create for each document a set of features that characterizes the particularity of each document. Inspired by the homework 03, we could build a graph using those features and then, using spectral decomposition, we could represent each document in a reducted space.
 
 [Grégoire CLEMENT](https://github.com/gregunz), [Maxime DELISLE](https://github.com/maxime-delisle), [Charles GALLAY](https://github.com/cgallay) and [Ali HOSSEINY](https://github.com/ali-h)
+
+## Dependencies
+In order to execute our notebook, you'll need the following libraries:
+- numpy
+- pandas
+- networkx
+- seaborn
+- scikit-learn (sklearn)
+- matplotlib
+- tqdm
+- plotly
+- python-louvain (collections)
