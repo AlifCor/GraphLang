@@ -1,26 +1,29 @@
-import numpy as np
 import itertools
 
+import numpy as np
 from sklearn.metrics import f1_score
 from sklearn.mixture import GaussianMixture
 
 
 def find_best_perm(y_true, y_pred, metric=lambda y1, y2: f1_score(y1, y2, average='weighted')):
     """
-        Compute the (square) distance matrix given some features and a metric
+    Find the best permutations of all possible cluster assignment
 
-        Parameters
-        —------—
-        y_true : ndarray
-        true labels
+    Parameters
+    ----------
+    y_true : ndarray
+    true labels
 
-        y_pred
-        prediction labels
+    y_pred : ndarray
+    prediction labels
 
-        Returns
-        —---—
-        out : tuple
-        Output tuple of the permutations
+    metric : numpy function
+    metric function to optimize (higher is better) (default is f1_score)
+
+    Returns
+    --------
+    out : tuple
+    Output tuple of the permutations
     """
     scores = []
     permutations = list(itertools.permutations(range(len(set(y_true)))))
@@ -35,12 +38,12 @@ def find_best_perm(y_true, y_pred, metric=lambda y1, y2: f1_score(y1, y2, averag
 def fast_gmm(y_true, n_classes, eigenvectors):
     gmm_clf = GaussianMixture(n_components=n_classes, covariance_type='full', max_iter=500, random_state=42)
     gmm_clf.fit(eigenvectors)
-    
+
     y_pred_brute = gmm_clf.predict(eigenvectors)
     y_pred_proba_brute = gmm_clf.predict_proba(eigenvectors)
-    
+
     best_perm = find_best_perm(y_true, y_pred_brute)
-    
+
     y_pred = np.vectorize(lambda x: best_perm[x])(y_pred_brute)
     d = {best_perm[i]:i for i in range(len(best_perm))}
     perm = np.array([ d[i] for i in range(len(d))])
