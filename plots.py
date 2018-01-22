@@ -1,13 +1,14 @@
 import itertools
-from matplotlib import pyplot as plt
+
 import numpy as np
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 import plotly.graph_objs as go
+from matplotlib import pyplot as plt
+from plotly.offline import iplot
 
 
-#A function to plot the confusion matrix, taken from 
-#http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
-#sphx-glr-auto-examples-model-selection-plot-confusion-matrix-py
+# A function to plot the confusion matrix, taken from
+# http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
+# sphx-glr-auto-examples-model-selection-plot-confusion-matrix-py
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
@@ -18,7 +19,7 @@ def plot_confusion_matrix(cm, classes,
     """
     if normalize:
         div = cm.sum(axis=1)[:, np.newaxis]
-        div[div==0]=1
+        div[div == 0] = 1
         cm = cm.astype('float') / div
 
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
@@ -40,22 +41,22 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
 
 
-def plot3D(eigenvectors, pred, infos, label_to_name):
-    #copy past from above
+def plot3D(eigenvectors, pred, infos, label_to_name, node_size=2, opacity=0.9):
+    # copy past from above
     traces = []
     my_axis = dict(
-                    showbackground=False,
-                    zeroline=False,
-                    ticks=False,
-                    showgrid=False,
-                    showspikes=False,
-                    showticklabels=False,
-                    showtickprefix=False,
-                    showexponent=False)
+        showbackground=False,
+        zeroline=False,
+        ticks=False,
+        showgrid=False,
+        showspikes=False,
+        showticklabels=False,
+        showtickprefix=False,
+        showexponent=False)
 
     for label in sorted(set(pred)):
         label_mask = pred == label
-        #'''
+        # '''
         x = eigenvectors[:, 1][label_mask]
         y = eigenvectors[:, 2][label_mask]
         z = eigenvectors[:, 3][label_mask]
@@ -67,38 +68,38 @@ def plot3D(eigenvectors, pred, infos, label_to_name):
             name=label_to_name[label],
             mode='markers',
             marker=dict(
-                size= 1.5,
+                size=node_size,
                 color=label,
                 colorscale='Portland',
-                #colorscale='Viridis',
-                opacity=0.9
+                opacity=opacity
             ),
             text=infos[label_mask]
         )
 
         traces.append(trace)
         layout = go.Layout(
-        hovermode= 'closest',
-        margin=dict(
-            l=0,
-            r=0,
-            b=0,
-            t=0
+            hovermode='closest',
+            margin=dict(
+                l=0,
+                r=0,
+                b=0,
+                t=0
             ),
-        scene=go.Scene(dict(
-            xaxis=my_axis,
-            yaxis=my_axis,
-            zaxis=my_axis
-        ))
+            scene=go.Scene(dict(
+                xaxis=my_axis,
+                yaxis=my_axis,
+                zaxis=my_axis
+            ))
         )
-    
+
     data = traces
 
     fig = go.Figure(data=data, layout=layout)
     return iplot(fig)
 
-def dis2text(arr, tr_id2name,tr_GMMid2label):
+
+def dis2text(arr, tr_id2name, tr_GMMid2label):
     text = ""
     for i in range(len(arr)):
-        text += tr_id2name[tr_GMMid2label[i]] + ' : ' + str(int(arr[i]*1000)/10)+"%" + "<br>"
+        text += tr_id2name[tr_GMMid2label[i]] + ' : ' + str(int(arr[i] * 1000) / 10) + "%" + "<br>"
     return text
