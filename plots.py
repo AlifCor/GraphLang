@@ -98,8 +98,14 @@ def plot3D(eigenvectors, pred, infos, label_to_name, node_size=2, opacity=0.9):
     return iplot(fig)
 
 
-def dis2text(arr, tr_id2name, tr_GMMid2label):
+def dis2text_old(arr, tr_id2name, tr_GMMid2label):
     text = ""
     for i in range(len(arr)):
-        text += tr_id2name[tr_GMMid2label[i]] + ' : ' + str(int(arr[i] * 1000) / 10) + "%" + "<br>"
+        text += tr_id2name[i] + ' : ' + str(int(arr[i] * 1000) / 10) + "%" + "<br>"
+    return text
+
+def dis2text(arr, tr_id2name):
+    text = ""
+    for i in range(len(arr)):
+        text += tr_id2name[i] + ' : ' + str(int(arr[i] * 1000) / 10) + "%" + "<br>"
     return text
