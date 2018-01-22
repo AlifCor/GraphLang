@@ -96,8 +96,8 @@ def plot3D(eigenvectors, pred, infos, label_to_name, node_size=2, opacity=0.9):
     return iplot(fig)
 
 
-def dis2text(arr, tr_id2name):
+def proba_to_infos(y_pred_proba, label_to_name):
     text = ""
-    for i in range(len(arr)):
-        text += tr_id2name[i] + ' : ' + str(int(arr[i] * 1000) / 10) + "%" + "<br>"
+    for i in range(len(y_pred_proba)):
+        text += label_to_name[i] + ' : ' + str(int(y_pred_proba[i] * 1000) / 10) + "%" + "<br/>"
     return text
