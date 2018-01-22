@@ -42,5 +42,7 @@ def fast_gmm(y_true, n_classes, eigenvectors):
     best_perm = find_best_perm(y_true, y_pred_brute)
     
     y_pred = np.vectorize(lambda x: best_perm[x])(y_pred_brute)
-    y_pred_proba = y_pred_proba_brute[:, best_perm]
+    d = {best_perm[i]:i for i in range(len(best_perm))}
+    perm = np.array([ d[i] for i in range(len(d))])
+    y_pred_proba = y_pred_proba_brute[:, perm]
     return y_pred, y_pred_proba
