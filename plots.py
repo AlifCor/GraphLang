@@ -9,7 +9,7 @@ from plotly.offline import iplot
 # A function to plot the confusion matrix, taken from
 # http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
 # sphx-glr-auto-examples-model-selection-plot-confusion-matrix-py
-def plot_confusion_matrix(cm, classes,
+def plot_confusion_matrix(cm, classes_x, classes_y,
                           normalize=False,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
@@ -25,9 +25,9 @@ def plot_confusion_matrix(cm, classes,
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=90)
-    plt.yticks(tick_marks, classes)
+    tick_marks = np.arange(len(classes_x))
+    plt.xticks(tick_marks, classes_x, rotation=90)
+    plt.yticks(tick_marks, classes_y)
 
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
