@@ -63,7 +63,7 @@ def dist_to_adj_matrix(dist, kernel_type):
     return mat
 
 
-def filter_neighbors(weights, NEIGHBORS):
+def filter_neighbors(weights, neighbors):
     """
     Given a weights matrix, keep only the best edges/neighbors (edges with biggest weight)
     for each node
@@ -81,7 +81,7 @@ def filter_neighbors(weights, NEIGHBORS):
     out : ndarray
     Output array, the same weights matrix but with only the best edges/neighbors
     """
-    ind = np.argsort(weights, axis=1)[:, ::-1][:,:NEIGHBORS]
+    ind = np.argsort(weights, axis=1)[:, ::-1][:, :neighbors]
     new_weights = np.zeros(weights.shape)
     for idx, indices in enumerate(ind):
         new_weights[idx, indices] = 1
