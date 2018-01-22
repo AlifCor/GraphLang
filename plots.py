@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from plotly.offline import iplot
 
 
-# A function to plot the confusion matrix, taken from
+# A function to plot the confusion matrix, inspired by
 # http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
 # sphx-glr-auto-examples-model-selection-plot-confusion-matrix-py
 def plot_confusion_matrix(cm, classes_x, classes_y,
@@ -99,5 +99,5 @@ def plot3D(eigenvectors, pred, infos, label_to_name, node_size=2, opacity=0.9):
 def proba_to_infos(y_pred_proba, label_to_name):
     text = ""
     for i in range(len(y_pred_proba)):
-        text += label_to_name[i] + ' : ' + str(int(y_pred_proba[i] * 1000) / 10) + "%" + "<br/>"
+        text += label_to_name[i] + ' : ' + str(int(y_pred_proba[i] * 1000) / 10) + "%" + "<br>"
     return text

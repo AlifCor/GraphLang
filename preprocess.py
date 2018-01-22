@@ -78,6 +78,22 @@ def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, st
     weight /= 2
     return weight, to_index + 1, links_made
 
+def build_link2(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True, self_links=False):
+    links_made = 0
+    if(weight <= 0):
+        weight, to_index + 1, links_made
+    words_len = len(words)
+
+    while to_index < words_len and (words[to_index] in string.punctuation or (not links_to_stopwords and words[to_index] in stopwords) or (not self_links and words[to_index] == words[from_index])):
+        to_index += 1
+        weight -= 1
+
+    if (to_index - from_index) <= max_dist and to_index < len(words):
+        links_made = 1
+        adj[words_map[words[from_index]], words_map[words[to_index]]] = adj[words_map[words[from_index]], words_map[words[to_index]]] + weight
+    weight -= 1
+    return weight, to_index + 1, links_made
+
 def build_graph(lemmas, lemmas_map, max_dist=20, nlinks=4, max_weight=16, lang=None, links_from_stopwords=True, links_to_stopwords=True, self_links=False):
     len_dist_lemmas = len(lemmas_map)
     len_lemmas = len(lemmas)
@@ -88,15 +104,15 @@ def build_graph(lemmas, lemmas_map, max_dist=20, nlinks=4, max_weight=16, lang=N
         # TODO Take into account stop words
         if lemma in string.punctuation or (not links_from_stopwords and lemma in stopwords):
             continue
-        weight = max_weight
+        weight = max_dist#max_weight
         next_index = index + 1
         total_links_made = 0
 
         for i in range(0, max_dist):
-            weight, next_index, links_made = build_link(adj, weight, lemmas_map, lemmas, index, next_index, max_dist, stopwords, links_to_stopwords, self_links)
+            weight, next_index, links_made = build_link2(adj, weight, lemmas_map, lemmas, index, next_index, max_dist, stopwords, links_to_stopwords, self_links)
             total_links_made += links_made
 
-            if(total_links_made >= nlinks):
+            if(total_links_made >= nlinks or weight <= 0):
                 break
 
     return adj
