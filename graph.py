@@ -10,18 +10,20 @@ def np_to_nx(M, words_map=None):
     G = nx.from_numpy_matrix(M)
     if(words_map != None):
         words_map_inv = {e[1]:e[0] for e in words_map.items()}
-        nx.set_node_attributes(G, "word", word_map_inversed)
+        for n in G:
+            G.nodes[n]["word"] = words_map_inv[n]
 
     return G
 
 def compute_betweenness(G, weight="weight"):
     betweenness = nx.betweenness_centrality(G, weight=weight)
-    nx.set_node_attributes(G, "betweenness", betweenness)
+    for n in G:
+        G.nodes[n]["betweenness"] = betweenness[n]
 
     return betweenness
 
 def scale_betweenness(betweenness, min_=10, max_=120):
-    max_el = max(betweenness.items(), key=lambda el: el[1])
+    max_el = max(betweenness.items(), key=lambda el: el[1])[1]
     mult = max_ / (max_el + min_)
     betweenness_scaled = {k: mult*v + min_ for k,v in betweenness.items()}
 
@@ -31,7 +33,7 @@ def community_partition(G, weight="weight"):
     if(weight == "betweenness" and G.nodes()[0].get("betweenness") == None):
         compute_betweenness(G)
 
-    return community.best_partition(Gn, weight=weight)
+    return community.best_partition(G, weight=weight)
 
 def communities(G, draw=True, cmap=None, pos=None, partition=None, betweenness_scaled=None):
     if(partition == None):
@@ -57,17 +59,16 @@ def communities(G, draw=True, cmap=None, pos=None, partition=None, betweenness_s
 
     return pos, partition, betweenness_scaled
 
-def induced_graph(original_graph, induced_graph=None, draw=True, cmap=None, words_map_inv=None, pos=None, betweenness_scaled=None):
+def induced_graph(original_graph, partition, induced_graph=None, draw=True, cmap=None, words_map_inv=None, pos=None, betweenness_scaled=None):
     if(induced_graph == None):
-        induced_graph = community.induced_graph(partition, original_graph, weight=sizes)
+        induced_graph = community.induced_graph(partition, original_graph, weight="weight")
 
     if(draw and cmap):
         if(pos == None):
             pos = nx.spring_layout(induced_graph)
-
         w = induced_graph.degree(weight="weight")
 
-        sizes = [w[node] / 350 for node in induced_graph.nodes()]
+        sizes = [w[node] for node in induced_graph.nodes()]
         nx.draw(induced_graph, pos=pos, node_size=sizes, node_color=[cmap[n] for n in induced_graph.nodes()])
 
         labels = {}
@@ -75,6 +76,6 @@ def induced_graph(original_graph, induced_graph=None, draw=True, cmap=None, word
             rep = max([nodes for nodes in partition.keys() if partition[nodes] == com], key=lambda n: original_graph.degree(n, weight="weight"))
             labels[com] = words_map_inv[rep]
 
-        nx.draw_networkx_labels(induced_graph, pos_gnc, labels, font_size=16)
-    
+        nx.draw_networkx_labels(induced_graph, pos, labels, font_size=16)
+
     return induced_graph
