@@ -1,3 +1,7 @@
+"""
+Various methods related to graph construction and analysis
+"""
+
 from preprocess import *
 
 import numpy as np
@@ -5,7 +9,11 @@ import networkx as nx
 import community
 from matplotlib import pyplot as plt
 
-def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True, self_links=False):
+def build_link_exp_decay(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True, self_links=False):
+    """
+    Builds a link from a given word in the graph to another word at a defined index.
+    The farther the other word, the smaller the edge between them.
+    """
     words_len = len(words)
     links_made = 0
     while to_index < words_len and (words[to_index] in string.punctuation or (not links_to_stopwords and words[to_index] in stopwords) or (not self_links and words[to_index] == words[from_index])):
@@ -18,7 +26,7 @@ def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, st
     weight /= 2
     return weight, to_index + 1, links_made
 
-def build_link2(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True, self_links=False):
+def build_link(adj, weight, words_map, words, from_index, to_index, max_dist, stopwords, links_to_stopwords=True, self_links=False):
     links_made = 0
     if(weight <= 0):
         weight, to_index + 1, links_made
@@ -49,7 +57,7 @@ def build_graph(lemmas, lemmas_map, max_dist=20, nlinks=4, max_weight=16, lang=N
         total_links_made = 0
 
         for i in range(0, max_dist):
-            weight, next_index, links_made = build_link2(adj, weight, lemmas_map, lemmas, index, next_index, max_dist, stopwords, links_to_stopwords, self_links)
+            weight, next_index, links_made = build_link(adj, weight, lemmas_map, lemmas, index, next_index, max_dist, stopwords, links_to_stopwords, self_links)
             total_links_made += links_made
 
             if(total_links_made >= nlinks or weight <= 0):
@@ -137,13 +145,13 @@ def communities(G, draw=True, cmap=None, pos=None, partition=None, betweenness_s
             count = count + 1.
             list_nodes = [nodes for nodes in partition.keys() if partition[nodes] == com]
             sizes = [betweenness_scaled[node] for node in list_nodes]
-            nx.draw_networkx_nodes(G, pos, list_nodes, node_size=sizes, node_color = cmap[com])
+            nx.draw_networkx_nodes(G, pos, list_nodes, node_size=sizes, node_color=cmap[com])
 
         nx.draw_networkx_edges(G, pos, alpha=0.05)
 
     return pos, partition, betweenness_scaled
 
-def induced_graph(original_graph, partition, induced_graph=None, draw=True, cmap=None, words_map_inv=None, pos=None, betweenness_scaled=None):
+def induced_graph(original_graph, partition, induced_graph=None, rescale_node_size=1., draw=True, cmap=None, words_map_inv=None, pos=None, betweenness_scaled=None):
     if(induced_graph == None):
         induced_graph = community.induced_graph(partition, original_graph, weight="weight")
 
@@ -152,7 +160,7 @@ def induced_graph(original_graph, partition, induced_graph=None, draw=True, cmap
             pos = nx.spring_layout(induced_graph)
         w = induced_graph.degree(weight="weight")
 
-        sizes = [w[node] for node in induced_graph.nodes()]
+        sizes = [w[node]*rescale_node_size for node in induced_graph.nodes()]
         nx.draw(induced_graph, pos=pos, node_size=sizes, node_color=[cmap[n] for n in induced_graph.nodes()])
 
         labels = {}
